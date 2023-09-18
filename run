@@ -1,0 +1,9 @@
+#!/bin/bash -e
+
+CRI=(podman)
+
+"${CRI[@]}" run -it --rm         \
+    -v "$PWD:/app/"              \
+    -w /app/                     \
+    docker.io/haskell:9.4.7-slim \
+    "$@"
