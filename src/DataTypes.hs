@@ -1,3 +1,10 @@
+{-
+-- EPITECH PROJECT, 2023
+-- glados
+-- File description:
+-- DataTypes
+-}
+
 module DataTypes () where
 
 data Expression
