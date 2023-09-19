@@ -22,7 +22,6 @@ data Expression
   | Cond [(Expression, Expression)]
 
 instance Show Expression where
-  show :: Expression -> String
   show = showExpression
 
 showExpression :: Expression -> String
