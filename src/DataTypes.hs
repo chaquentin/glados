@@ -1,4 +1,7 @@
-module DataTypes () where
+module DataTypes
+  ( Expression (..),
+  )
+where
 
 data Expression
   = Null
@@ -15,7 +18,6 @@ data Expression
   | Cond [(Expression, Expression)]
 
 instance Show Expression where
-  show :: Expression -> String
   show = showExpression
 
 showExpression :: Expression -> String
