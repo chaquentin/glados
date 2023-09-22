@@ -41,12 +41,10 @@ item = Parser $ \case
   (x : xs) -> [(x, xs)]
 
 sat :: (Char -> Bool) -> Parser Char
-sat p = do
-  x <- item
-  if p x then return x else empty
+sat p = item >>= \x -> if p x then return x else empty
 
 char :: Char -> Parser Char
-char c = sat (== c)
+char = sat . (==)
 
 string :: String -> Parser String
 string = traverse char
@@ -75,8 +73,23 @@ parens p = symbol "(" *> p <* symbol ")"
 list :: Parser Ast
 list = List <$> parens (many ast)
 
+lambda :: Parser Ast
+lambda = Lambda <$> (symbol "lambda" *> parens (many (token (some (sat (/= ' ')))))) <*> ast
+
+if' :: Parser Ast
+if' = If <$> (symbol "if" *> ast) <*> ast <*> ast
+
+define :: Parser Ast
+define = Define <$> (symbol "define" *> token (some (sat (/= ' ')))) <*> ast
+
+variable :: Parser Ast
+variable = Variable <$> token (some (sat (/= ' ')))
+
+null' :: Parser Ast
+null' = Null <$ symbol "null"
+
 ast :: Parser Ast
-ast = number <|> list
+ast = number <|> list <|> lambda <|> if' <|> define <|> variable <|> null'
 
 parseAst :: String -> Ast
 parseAst input = case parse ast input of
