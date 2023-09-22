@@ -10,4 +10,6 @@ isEmpty :: String -> Bool
 isEmpty = all isSpace
 
 trim :: String -> String
-trim = dropWhile isSpace . reverse . dropWhile isSpace . reverse
+trim = f . f
+  where
+    f = reverse . dropWhile isSpace
