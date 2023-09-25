@@ -1,7 +1,10 @@
 -- Add lambacase
 {-# LANGUAGE LambdaCase #-}
 
-module Parser () where
+module Parser
+  ( parseAst,
+  )
+where
 
 import Control.Applicative (Alternative (..), empty)
 import DataTypes (Ast (..))
