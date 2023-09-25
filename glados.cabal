@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      DataTypes
       Lib
   other-modules:
       Paths_glados
