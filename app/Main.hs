@@ -7,11 +7,17 @@
 
 module Main (main) where
 
-import Lib
 import DataTypes
+import GetArgs
+import Exception
+import System.Environment
+import Control.Exception
 
 main :: IO ()
-main = do
+main = handle exceptionHandler $ do
+    argv <- getArgs
     contents <- getContents
-    putStrLn "Input:"
-    putStrLn contents
+    let args = parseArgs argv
+    if (args /= "")
+        then print args
+        else print contents

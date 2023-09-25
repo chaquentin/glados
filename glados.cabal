@@ -26,6 +26,8 @@ source-repository head
 library
   exposed-modules:
       DataTypes
+      Exception
+      GetArgs
       Lib
   other-modules:
       Paths_glados
