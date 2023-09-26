@@ -94,9 +94,8 @@ null' = Null <$ symbol "null"
 ast :: Parser Ast
 ast = number <|> list <|> lambda <|> if' <|> define <|> variable <|> null'
 
+parseAst' :: String -> [(Ast, String)]
+parseAst' = parse ast
+
 parseAst :: String -> Ast
-parseAst input = case parse ast input of
-  [(a, [])] -> a
-  [(_, out)] -> error $ "Unused input: " ++ out
-  [] -> error "Invalid input"
-  _ -> error "Ambiguous input"
+parseAst = fst . head . parseAst'
