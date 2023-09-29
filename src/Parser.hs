@@ -58,6 +58,9 @@ digit = sat (`elem` ['0' .. '9'])
 number :: Parser Ast
 number = Number . read <$> some digit
 
+boolean :: Parser Ast
+boolean = Boolean . read <$> (string "#t" <|> string "#f")
+
 space :: Parser Char
 space = sat (`elem` [' ', '\n', '\t'])
 
@@ -86,16 +89,17 @@ define :: Parser Ast
 define = Define <$> (symbol "define" *> token (some (sat (/= ' ')))) <*> ast
 
 variable :: Parser Ast
-variable = Variable <$> token (some (sat (/= ' ')))
+variable = Variable <$> token (some (sat (`notElem` [' ', '(', ')'])))
 
 null' :: Parser Ast
 null' = Null <$ symbol "null"
 
 ast :: Parser Ast
-ast = number <|> list <|> lambda <|> if' <|> define <|> variable <|> null'
+ast = number <|> boolean <|> list <|> lambda <|> if' <|> define <|> null' <|> variable
 
 parseAst' :: String -> [(Ast, String)]
 parseAst' = parse ast
 
+-- | Parse a string into an AST.
 parseAst :: String -> Ast
 parseAst = fst . head . parseAst'
