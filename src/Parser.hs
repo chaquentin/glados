@@ -95,11 +95,10 @@ isNotAllDigits :: String -> Bool
 isNotAllDigits = not . all (`elem` ['0' .. '9'])
 
 variable :: Parser Ast
-variable = do
-  var <- token (some (sat isValideVariableChar))
-  if isNotAllDigits var
-    then return (Variable var)
-    else return (Number (read var))
+variable =
+  token (some (sat isValideVariableChar)) >>= \case
+    var | isNotAllDigits var -> return (Variable var)
+    var -> return (Number (read var))
 
 null' :: Parser Ast
 null' = Null <$ symbol "null"
