@@ -6,18 +6,17 @@
 -}
 
 module Main (main) where
-
-import DataTypes
-import GetArgs
-import Exception
 import System.Environment
-import Control.Exception
+import ReadFile
+
+printHelp :: IO ()
+printHelp = putStrLn "Usage ./glados [FILENAME]"
+    >> putStrLn "\t [FILENAME]: file containing instructions to interpret"
 
 main :: IO ()
-main = handle exceptionHandler $ do
-    argv <- getArgs
-    contents <- getContents
-    let args = parseArgs argv
-    if (args /= "")
-        then print args
-        else print contents
+main = do
+    args <- getArgs
+    case args of
+        ["-h"] -> printHelp
+        [filename] -> readFileIfExists filename
+        _ -> putStrLn "Incorrect use. Use './glados -h' to display help."

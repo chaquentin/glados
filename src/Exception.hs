@@ -23,7 +23,7 @@ data ICExceptions = SendHelp
 instance Exception ICExceptions
 
 sendHelp :: IO ()
-sendHelp = mapM_ putStrLn ["USAGE: ./glados < file.scm\n",
+sendHelp = mapM_ putStrLn ["USAGE: ./glados < file.scm",
                 "\tfile.scm\tfile containing instructions to interpret"]
 
 exceptionHandler :: ICExceptions -> IO ()
