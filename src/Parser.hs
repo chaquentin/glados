@@ -88,8 +88,18 @@ if' = If <$> (symbol "if" *> ast) <*> ast <*> ast
 define :: Parser Ast
 define = Define <$> (symbol "define" *> token (some (sat (/= ' ')))) <*> ast
 
+isValideVariableChar :: Char -> Bool
+isValideVariableChar c = c `notElem` [' ', '(', ')', '\n', '\t']
+
+isNotAllDigits :: String -> Bool
+isNotAllDigits = not . all (`elem` ['0' .. '9'])
+
 variable :: Parser Ast
-variable = Variable <$> token (some (sat (`notElem` [' ', '(', ')'])))
+variable = do
+  var <- token (some (sat isValideVariableChar))
+  if isNotAllDigits var
+    then return (Variable var)
+    else return (Number (read var))
 
 null' :: Parser Ast
 null' = Null <$ symbol "null"
