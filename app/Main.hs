@@ -1,14 +1,23 @@
-module Main (main) where
+{-
+-- EPITECH PROJECT, 2023
+-- glados
+-- File description:
+-- Main
+-}
 
-import Execute (printExecute)
-import Lib (someFunc)
-import Parser (parseAst)
-import System.Environment (getArgs)
+module Main (main) where
+import System.Environment
+import ReadFile
+
+printHelp :: IO ()
+printHelp = putStrLn "Usage ./glados [FILENAME]"
+    >> putStrLn "\t [FILENAME]: file containing instructions to interpret"
 
 main :: IO ()
 main = do
-  args <- getArgs
-  --   Expect one arg, the string to parse.
-  case args of
-    [arg] -> do printExecute $ parseAst arg
-    _ -> someFunc
+    args <- getArgs
+    case args of
+        ["-h"] -> printHelp
+        [filename] -> readFileIfExists filename
+        _ -> putStrLn "Incorrect use. Use './glados -h' to display help."
+        
