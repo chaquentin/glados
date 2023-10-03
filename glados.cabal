@@ -29,7 +29,6 @@ library
       Exception
       Execute
       FileProc
-      GetArgs
       Parser
       ReadFile
   other-modules:
