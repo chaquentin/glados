@@ -26,8 +26,8 @@ source-repository head
 library
   exposed-modules:
       DataTypes
-      Execute
       Exception
+      Execute
       FileProc
       GetArgs
       Parser
@@ -40,6 +40,7 @@ library
   build-depends:
       base >=4.7 && <5
     , containers
+    , directory
   default-language: Haskell2010
 
 executable glados-exe
@@ -52,6 +53,7 @@ executable glados-exe
   build-depends:
       base >=4.7 && <5
     , containers
+    , directory
     , glados
   default-language: Haskell2010
 
@@ -66,5 +68,6 @@ test-suite glados-test
   build-depends:
       base >=4.7 && <5
     , containers
+    , directory
     , glados
   default-language: Haskell2010
