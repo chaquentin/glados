@@ -13,3 +13,4 @@ data Ast
   | If Ast Ast Ast
   | Define String Ast
   deriving (Show, Eq)
+  

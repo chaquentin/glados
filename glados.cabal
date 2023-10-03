@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.2.
+-- This file has been generated from package.yaml by hpack version 0.36.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -27,9 +27,11 @@ library
   exposed-modules:
       DataTypes
       Execute
+      Exception
       FileProc
-      Lib
+      GetArgs
       Parser
+      ReadFile
   other-modules:
       Paths_glados
   hs-source-dirs:
