@@ -58,6 +58,9 @@ digit = sat (`elem` ['0' .. '9'])
 number :: Parser Ast
 number = Number . read <$> some digit
 
+boolean :: Parser Ast
+boolean = Boolean . read <$> (string "#t" <|> string "#f")
+
 space :: Parser Char
 space = sat (`elem` [' ', '\n', '\t'])
 
@@ -85,18 +88,27 @@ if' = If <$> (symbol "if" *> ast) <*> ast <*> ast
 define :: Parser Ast
 define = Define <$> (symbol "define" *> token (some (sat (/= ' ')))) <*> ast
 
+isValideVariableChar :: Char -> Bool
+isValideVariableChar c = c `notElem` [' ', '(', ')', '\n', '\t']
+
+isNotAllDigits :: String -> Bool
+isNotAllDigits = not . all (`elem` ['0' .. '9'])
+
 variable :: Parser Ast
-variable = Variable <$> token (some (sat (/= ' ')))
+variable =
+  token (some (sat isValideVariableChar)) >>= \case
+    var | isNotAllDigits var -> return (Variable var)
+    var -> return (Number (read var))
 
 null' :: Parser Ast
 null' = Null <$ symbol "null"
 
 ast :: Parser Ast
-ast = number <|> list <|> lambda <|> if' <|> define <|> variable <|> null'
+ast = number <|> boolean <|> list <|> lambda <|> if' <|> define <|> null' <|> variable
 
+parseAst' :: String -> [(Ast, String)]
+parseAst' = parse ast
+
+-- | Parse a string into an AST.
 parseAst :: String -> Ast
-parseAst input = case parse ast input of
-  [(a, [])] -> a
-  [(_, out)] -> error $ "Unused input: " ++ out
-  [] -> error "Invalid input"
-  _ -> error "Ambiguous input"
+parseAst = fst . head . parseAst'
