@@ -6,6 +6,7 @@ module Execute
   )
 where
 
+import Data.Fixed (mod')
 import qualified Data.Map as Map
 import DataTypes (Ast (..))
 
@@ -37,7 +38,6 @@ execute (List (f : args)) env = do
     _ -> error "First element of list must be a function."
 execute _ _ = error "Invalid expression."
 
-
 -- | Execute an AST in an environment with built-in functions.
 buildInExecute :: Ast -> IO Ast
 buildInExecute ast = execute ast buildInFunctions
@@ -47,8 +47,12 @@ buildInFunctions :: Env
 buildInFunctions =
   Map.fromList
     [ ("+", BuiltIn plus),
-      ("inc", BuiltIn inc),
-      ("eq?", BuiltIn eq)
+      ("-", BuiltIn minus),
+      ("*", BuiltIn times),
+      ("div", BuiltIn divi),
+      ("mod", BuiltIn modd),
+      ("eq?", BuiltIn eq),
+      ("<", BuiltIn inf)
     ]
 
 -- | A function that checks if two values are equal.
@@ -62,9 +66,29 @@ eq _ = Boolean False
 plus :: [Ast] -> Ast
 plus = Number . sum . map (\case Number n -> n; _ -> error "Argument must be a number.")
 
-inc :: [Ast] -> Ast
-inc [Number n] = Number $ n + 1
-inc _ = error "Argument must be a number."
+-- | A function that subtracts 2 numbers.
+minus :: [Ast] -> Ast
+minus [Number n1, Number n2] = Number $ n1 - n2
+minus _ = error "Arguments must be numbers."
+
+-- | A function that multiplies n numbers.
+times :: [Ast] -> Ast
+times = Number . product . map (\case Number n -> n; _ -> error "Argument must be a number.")
+
+-- | A function that divides 2 numbers.
+divi :: [Ast] -> Ast
+divi [Number n1, Number n2] = Number $ n1 / n2
+divi _ = error "Arguments must be numbers."
+
+-- | A function that calculates the remainder of 2 numbers.
+modd :: [Ast] -> Ast
+modd [Number n1, Number n2] = Number $ n1 `mod'` n2
+modd _ = error "Arguments must be numbers."
+
+-- | A function that checks if the first number is smaller than the second.
+inf :: [Ast] -> Ast
+inf [Number n1, Number n2] = Boolean $ n1 < n2
+inf _ = error "Arguments must be numbers."
 
 -- | Execute an AST in an empty environment and print the result.
 printExecute :: Ast -> IO ()
