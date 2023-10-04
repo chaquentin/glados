@@ -10,6 +10,7 @@ data Ast
   | Null
   | List [Ast]
   | Lambda [String] Ast
+  | Function [String] Ast
   | If Ast Ast Ast
   | Define String Ast
   | BuiltIn ([Ast] -> Ast)
@@ -24,6 +25,7 @@ instance Show Ast where
   show (If c t e) = "(if " ++ show c ++ " " ++ show t ++ " " ++ show e ++ ")"
   show (Define v e) = "(define " ++ v ++ " " ++ show e ++ ")"
   show (BuiltIn _) = "<built-in function>"
+  show (Function args body) = "(function (" ++ unwords args ++ ") " ++ show body ++ ")"
 
 instance Eq Ast where
   (Number n) == (Number n') = n == n'
@@ -35,4 +37,5 @@ instance Eq Ast where
   (If c t e) == (If c' t' e') = c == c' && t == t' && e == e'
   (Define v e) == (Define v' e') = v == v' && e == e'
   (BuiltIn _) == (BuiltIn _) = True
+  (Function args body) == (Function args' body') = args == args' && body == body'
   _ == _ = False
