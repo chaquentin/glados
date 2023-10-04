@@ -8,6 +8,8 @@
 module ReadFile (readFileIfExists) where
 import System.IO
 import System.Directory
+import Parser (parseAst)
+import Execute (printExecute)
 
 readFileIfExists :: String -> IO ()
 readFileIfExists filename = do
@@ -22,6 +24,7 @@ readFileIfExists filename = do
                         Just contents -> do
                             putStrLn "File contents :"
                             putStrLn contents
+                            printExecute $ parseAst contents
                         Nothing -> putStrLn $ "File " ++ filename ++ " is empty."
                 else putStrLn $ "You don't have read permissions for file " ++ filename ++ "."
         else putStrLn $ "File " ++ filename ++ " does not exist."
