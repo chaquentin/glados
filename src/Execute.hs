@@ -20,7 +20,12 @@ execute (Boolean b) _ = return $ Boolean b
 execute Null _ = return Null
 -- If the expression is a variable, look it up in the environment.
 execute (Variable v) env = maybe (error $ "Variable " ++ v ++ " not found.") return (Map.lookup v env)
-execute (List [Define name expr]) env = Map.insert name <$> execute expr env <*> pure env >>= execute expr
+-- execute (List [Define name expr]) env = Map.insert name expr env `seq` return Null
+execute (List [Define name expr]) env = case length . words $ name of
+  -- if name is one word, then it's a variable definition, so we add it to the environment, nothing else
+  1 -> Map.insert name expr env `seq` return Null
+  -- if name is more than one word, then it's a function definition, so we build a Function and add it to the environment, nothing else
+  _ -> Map.insert name (Function (words name) expr) env `seq` return Null
 execute (List [If c t e]) env = do
   Boolean condition <- execute c env
   if condition then execute t env else execute e env
@@ -32,6 +37,10 @@ execute (List (f : args)) env = do
       argVals <- mapM (`execute` env) args
       return $ f' argVals
     Lambda argNames body -> do
+      argVals <- mapM (`execute` env) args
+      let newEnv = Map.fromList $ zip argNames argVals
+      execute body (Map.union newEnv env)
+    Function argNames body -> do
       argVals <- mapM (`execute` env) args
       let newEnv = Map.fromList $ zip argNames argVals
       execute body (Map.union newEnv env)
