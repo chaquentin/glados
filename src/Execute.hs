@@ -75,8 +75,9 @@ eq _ = Boolean False
 plus :: [Ast] -> Ast
 plus = Number . sum . map (\case Number n -> n; _ -> error "Argument must be a number.")
 
--- | A function that subtracts 2 numbers.
+-- | A function that subtracts 2 numbers, or negates a number.
 minus :: [Ast] -> Ast
+minus [Number n] = Number $ -n
 minus [Number n1, Number n2] = Number $ n1 - n2
 minus _ = error "Arguments must be numbers."
 
