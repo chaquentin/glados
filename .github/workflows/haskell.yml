@@ -2,6 +2,9 @@ name: Haskell CI
 
 on: [push]
 
+env:
+  MIRROR_URL: git@github.com:EpitechPromo2026/B-FUN-500-TLS-5-1-glados-quentin.challon.git
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,3 +22,17 @@ jobs:
 
     - name: Test with Stack
       run: stack test --allow-different-user
+
+  pushing_to_the_mirror_repo:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Mirror repository
+      uses: pixta-dev/repository-mirroring-action@v1
+      with:
+        target_repo_url: ${{ env.MIRROR_URL }}
+        ssh_private_key: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
