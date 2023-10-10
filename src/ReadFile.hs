@@ -22,9 +22,9 @@ readFileIfExists filename = do
                     fileContents <- readFileSafe filename
                     case fileContents of
                         Just contents -> do
-                            putStrLn "File contents :"
-                            putStrLn contents
-                            printExecute $ parseAst contents
+                            if contents /= ""
+                                then printExecute $ parseAst contents
+                            else putStrLn $ "File " ++ filename ++ " is empty." 
                         Nothing -> putStrLn $ "File " ++ filename ++ " is empty."
                 else putStrLn $ "You don't have read permissions for file " ++ filename ++ "."
         else putStrLn $ "File " ++ filename ++ " does not exist."
