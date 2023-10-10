@@ -23,8 +23,22 @@ jobs:
     - name: Test with Stack
       run: stack test --allow-different-user
 
-  pushing_to_the_mirror_repo:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
     needs: build
+    steps:
+      - name: Release
+        uses: marvinpinto/action-automatic-releases@latest
+        if: github.ref == 'refs/heads/main'
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: latest
+          prerelease: false
+          title: Release v.0.${{ github.run_number }}
+
+  pushing_to_the_mirror_repo:
+    needs: release
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
