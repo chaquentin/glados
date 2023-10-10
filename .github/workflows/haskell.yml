@@ -13,7 +13,7 @@ jobs:
     - name: Set up Haskell
       uses: actions/setup-haskell@v1.1
       with:
-        ghc-version: '8.8.3'
+        ghc-version: '9.6.3'
         enable-stack: true
         stack-version: 'latest'
     
