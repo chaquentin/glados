@@ -16,7 +16,7 @@ jobs:
 
     - name: Allow build
       run: chown -R $(id -un):$(id -gn) ~
-    
+
     - name: Build with Stack
       run: stack build --allow-different-user
 

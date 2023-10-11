@@ -24,7 +24,7 @@ readFileIfExists filename = do
                         Just contents -> do
                             if contents /= ""
                                 then printExecute $ parseAst contents
-                            else putStrLn $ "File " ++ filename ++ " is empty." 
+                            else putStrLn $ "File " ++ filename ++ " is empty."
                         Nothing -> putStrLn $ "File " ++ filename ++ " is empty."
                 else putStrLn $ "You don't have read permissions for file " ++ filename ++ "."
         else putStrLn $ "File " ++ filename ++ " does not exist."

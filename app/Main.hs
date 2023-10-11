@@ -20,4 +20,4 @@ main = do
         ["-h"] -> printHelp
         [filename] -> readFileIfExists filename
         _ -> putStrLn "Incorrect use. Use './glados -h' to display help."
-        
+
