@@ -46,7 +46,7 @@ add (Number x:Number y:xs) = Right $ Number (x + y) : xs
 add _ = Left "Invalid arguments for add"
 
 sub :: Stack -> Either String Stack
-sub (Number x:Number y:xs) = Right $ Number (y - x) : xs
+sub (Number x:Number y:xs) = Right $ Number (x - y) : xs
 sub _ = Left "Invalid arguments for sub"
 
 mul :: Stack -> Either String Stack
