@@ -27,3 +27,13 @@ type Program = [Instruction]    -- the program
 type Args = [Value]             -- the arguments
 type Env = [(String, Program)]  -- the environment
 type vars = [(String, Value)]   -- the variables
+
+
+-- the state of the program
+environment = 
+    function_name =
+        Program
+    function_name2 =
+        Program2
+main =
+    Program   
