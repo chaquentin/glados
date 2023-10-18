@@ -22,11 +22,11 @@ PushVar String          -- push the value of a variable into the stack
 ChangeVar String Value  -- change the value of a variable
 Ret                     -- return from a function
 
-type Stack = [Value]            -- the stack
-type Program = [Instruction]    -- the program
-type Args = [Value]             -- the arguments
-type Env = [(String, Int, Program)]  -- the environment
-type vars = [(String, Value)]   -- the variables
+type Stack = [Value]                    -- the stack
+type Program = [Instruction]            -- the program
+type Args = [Value]                     -- the arguments
+type Env = [(String, (Int, Program))]   -- the environment
+type vars = [(String, Value)]           -- the variables
 
 
 -- the state of the program
@@ -36,4 +36,4 @@ environment =
     function_name2 nombre_arguments2 =
         Program2
 main =
-    Program   
+    Program
