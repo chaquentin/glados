@@ -1,0 +1,6 @@
+main:
+    Push 12
+    Push 2
+    Push Sub
+    Call
+    Ret
