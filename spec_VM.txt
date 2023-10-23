@@ -19,14 +19,14 @@ JumpIfFalse Int         -- jump a Number of instructions if the top of the stack
 PushArg Int             -- push the nth argument into the stack
 PushEnv String          -- push the Program since the environment into the stack
 PushVar String          -- push the value of a variable into the stack
-ChangeVar String Value  -- change the value of a variable
+ChangeVar String Value  -- change the value of a variable if the variable doesn't exist, create it
 Ret                     -- return from a function
 
 type Stack = [Value]                    -- the stack
 type Program = [Instruction]            -- the program
 type Args = [Value]                     -- the arguments
 type Env = [(String, (Int, Program))]   -- the environment
-type vars = [(String, Value)]           -- the variables
+type Vars = [(String, Value)]           -- the variables
 
 
 -- the state of the program

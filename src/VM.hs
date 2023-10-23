@@ -34,12 +34,15 @@ data Instruction
     | JumpIfFalse Int
     | PushArg Int
     | PushEnv String
+    | PushVar String
+    | ChangeVar String Value
     | Ret
 
 type Stack = [Value]
 type Program = [Instruction]
 type Args = [Value]
 type Env = [(String, (Int, Program))]
+type Vars = [(String, Value)]
 
 add :: Stack -> Either String Stack
 add (Number x:Number y:xs) = Right $ Number (x + y) : xs
@@ -71,37 +74,52 @@ getargs :: Int -> Stack -> Args
 getargs 0 _ = []
 getargs n (x:xs) = x : (x:getargs (n - 1) xs)
 
-call :: Env -> Value -> Stack -> Either String Stack
-call _ (Builtin Add) s = add s
-call _ (Builtin Sub) s = sub s
-call _ (Builtin Mul) s = mul s
-call _ (Builtin Div) s = divi s
-call _ (Builtin Eqq) s = eqq s
-call _ (Builtin Less) s = less s
-call env (Function _ a p) (s:xs) = case exec (getargs a (s:xs)) env p [] of
+call :: Vars -> Env -> Value -> Stack -> Either String Stack
+call _ _ (Builtin Add) s = add s
+call _ _ (Builtin Sub) s = sub s
+call _ _ (Builtin Mul) s = mul s
+call _ _ (Builtin Div) s = divi s
+call _ _ (Builtin Eqq) s = eqq s
+call _ _ (Builtin Less) s = less s
+call vars env (Function _ a p) (s:xs) = case exec (getargs a (s:xs)) env vars p [] of
     Left err -> Left err
     Right (Number n) -> Right $ Number n : xs
     Right (Boolean b) -> Right $ Boolean b : xs
     Right (Function n ar p) -> Right $ Function n ar p : xs
     Right (Builtin b) -> Right $ Builtin b : xs
-call _ _ _ = Left "Invalid call"
+call _ _ _ _ = Left "Invalid call"
 
 eqq :: Stack -> Either String Stack
 eqq (Number x:Number y:xs) = Right $ Boolean (x == y) : xs
 eqq (Boolean x:Boolean y:xs) = Right $ Boolean (x == y) : xs
 eqq _ = Left "Invalid arguments for eq?"
 
-exec :: Args -> Env -> Program -> Stack -> Either String Value
-exec a env ((Push v):xs) s = exec a env xs (v : s)
-exec a env ((PushArg n):xs) s = exec a env xs ((a !! n) : s)
-exec a env (Call:xs) s = case call env (head s) (tail s) of
-    Left err -> Left err
-    Right p -> exec a env xs p
-exec a env ((JumpIfFalse n):xs) s = case jumpIfFalse n s xs of
-    Left err -> Left err
-    Right p -> exec a env p s
-exec a env ((PushEnv n):xs) s = case lookup n env of
+changevars :: Vars -> String -> Value -> Vars
+changevars [] _ _ = []
+changevars ((n, v): xs) name nvalue
+    | n == name = (name, nvalue) : xs
+    | otherwise = (n, v) : changevars xs name nvalue
+
+changevarslist :: Vars -> String -> Value -> Vars
+changevarslist vars name nvalue = case lookup name vars of
+    Just v -> changevars vars name nvalue
+    Nothing -> ((name, nvalue):vars)
+
+exec :: Args -> Env -> Vars -> Program -> Stack -> Either String Value
+exec a env vars ((Push v):xs) s = exec a env vars xs (v : s)
+exec a env vars ((PushArg n):xs) s = exec a env vars xs ((a !! n) : s)
+exec a env vars ((PushEnv n):xs) s = case lookup n env of
     Nothing -> Left "Invalid env"
-    Just (ar, p) -> exec a env xs (Function n ar p : s)
-exec a env (Ret:_) (v:_) = Right v
-exec _ _ _ _ = error "Invalid progra"
+    Just (ar, p) -> exec a env vars xs (Function n ar p : s)
+exec a env vars ((PushVar n):xs) s = case lookup n vars of
+    Nothing -> Left "Invalid push var"
+    Just v -> exec a env vars xs (v : s)
+exec a env vars ((ChangeVar n v):xs) s = exec a env (changevarslist vars n v) xs s
+exec a env vars (Call:xs) s = case call vars env (head s) (tail s) of
+    Left err -> Left err
+    Right p -> exec a env vars xs p
+exec a env vars ((JumpIfFalse n):xs) s = case jumpIfFalse n s xs of
+    Left err -> Left err
+    Right p -> exec a env vars p s
+exec a env vars (Ret:_) (v:_) = Right v
+exec _ _ _ _ _ = error "Invalid progra"
