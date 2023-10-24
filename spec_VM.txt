@@ -1,5 +1,6 @@
 data Value :
 Number      Int                 -- an integer
+Chaine      String              -- a string
 Boolean     Bool                -- True or False
 Builtin     Builtin             -- a builtin function
 Function    String  Int Program -- a function with a name, a number of arguments and a program 
@@ -11,6 +12,7 @@ Mul     -- multiplication
 Div     -- division
 Eqq     -- equality
 Less    -- less than
+Not     -- not
     
 Instruction :
 Push Value              -- push a value into the stack
