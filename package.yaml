@@ -51,7 +51,7 @@ executables:
 
 tests:
   glados-test:
-    main:                tests.hs
+    main:                vm.hs
     source-dirs:         test
     ghc-options:
     - -threaded
@@ -59,4 +59,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - glados
-    - HUnit
+    - QuickCheck
