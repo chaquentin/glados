@@ -38,9 +38,42 @@ cutFirstWord (x:xs) | x == ' ' = ([], removeIndemptation xs)
 -- stringToInstruction :: String -> Instruction
 -- stringToInstruction str 
 
+getEndOfString :: String -> Either String (String, String)
+getEndOfString [] = Left "Error: no end of string"
+getEndOfString (x:xs) | x == '"' = Right ([], xs)
+                      | otherwise = case getEndOfString xs of
+                        Right (str, rest) -> Right ((x:str), rest)
+                        Left err -> Left err
+
+getString :: String -> Either String (String, String)
+getString [] = Left "Error: no start of string"
+getString (x:xs) | x == '"' = getEndOfString xs
+                 | otherwise = Left "Error: no start of string"
+
+getNumber :: String -> (String, String)
+getNumber [] = ([], [])
+getNumber (x:xs) | x >= '0' && x <= '9' = (x: before, after)
+                 | otherwise = ([], x:xs)
+                 where (before, after) = getNumber xs
+
+getBool :: String -> Either String Bool
+getBool str = case cutFirstWord str of
+    ("true", _) -> Right True
+    ("false", _) -> Right False
+    _ -> Left "Error: not a boolean"
+
+restToValue :: String -> Value
+restToValue str = case getString str of
+    Right (str, _) -> Chaine str
+    Left err -> case getNumber str of
+        ([], _) -> case getBool str of
+            Right b -> Boolean b
+            Left err -> error err
+        (str, _) -> Number (read str :: Int)
+
 arrayToProgram :: [String] -> Program -> Program
 arrayToProgram [] _ = []
-arrayToProgram (x:xs) p | instruction == "push" = arrayToProgram xs (p ++ [Push (Number (read (drop 5 x) :: Int))])
+arrayToProgram (x:xs) p | instruction == "push" = arrayToProgram xs (p ++ [Push (Number (read rest :: Int))])
                         | instruction == "call" = arrayToProgram xs (p ++ [Call])
                         | otherwise = arrayToProgram xs p
                         where (instruction, rest) = cutFirstWord $ removeIndemptation x
