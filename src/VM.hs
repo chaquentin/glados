@@ -1,11 +1,9 @@
-{-# LANGUAGE InstanceSigs #-}
 {-|
 Module      : VM
 Description : This module contains the VM of the language.
-
 This module contains the VM of the language and all the functions to execute the program and the functions of the language.
 -}
-module VM where
+module VM (Value(..), Builtin(..), Instruction(..), Stack, Program, Args, Env, Vars, add, sub, mul, divi, eqq, less, nnot, nnot', jumpIfFalse, getargs, call, changevars, changevarslist, exec) where
 
 -- | This data type represent the value of the language.
 data Value
@@ -176,9 +174,38 @@ less _ = Left "Invalid arguments for less"
 -- False
 -- >>> nnot False
 -- True
-nnot :: Bool -> Bool
-nnot True = False
-nnot False = True
+nnot' :: Bool -> Bool
+nnot' True = False
+nnot' False = True
+
+-- | This function take a `Builtin`, `Stack` and return a `Stack` or an error.
+-- This function check if the 'Builtin' is 'Eqq' or 'Less' and call the function 'eqq' or 'less' with the stack and return the opposite of the result.
+-- If the 'Builtin' is not 'Eqq' or 'Less', it return an error.
+-- >>> nnot Eqq [Number 1, Number 2]
+-- Right [True]
+-- >>> nnot Eqq [Number 1, Number 1]
+-- Right [False]
+-- >>> nnot Eqq [Number 2, Number 1]
+-- Right [True]
+-- >>> nnot Less [Number 1, Number 2]
+-- Right [True]
+-- >>> nnot Less [Number 1, Number 1]
+-- Right [True]
+-- >>> nnot Less [Number 2, Number 1]
+-- Right [False]
+-- >>> nnot Add [Chaine "test", Chaine "test"]
+-- Left "Invalid arguments for not"
+nnot :: Builtin -> Stack -> Either String Stack
+nnot b s
+    | b == Eqq = case eqq s of
+        Left err -> Left err
+        Right ((Boolean bo):xs) -> Right $ Boolean (nnot' bo) : xs
+        _ -> Left "Invalid arguments for not"
+    | b == Less = case less s of
+        Left err -> Left err
+        Right ((Boolean bo):xs) -> Right $ Boolean (nnot' bo) : xs
+        _ -> Left "Invalid arguments for not"
+    | otherwise = Left "Invalid arguments for not"
 
 -- | This function take a `Int`, `Stack` and 'Program' and return a `Program` or an error.
 -- This function jump to the instruction at the index `Int` if the first element of the stack is `False`.
@@ -221,16 +248,7 @@ call _ _ (Builtin Mul) s = mul s
 call _ _ (Builtin Div) s = divi s
 call _ _ (Builtin Eqq) s = eqq s
 call _ _ (Builtin Less) s = less s
-call _ _ (Builtin (Not b)) s
-    | b == Eqq = case eqq s of
-        Left err -> Left err
-        Right ((Boolean bo):_) -> Right $ Boolean (nnot bo) : s
-        _ -> Left "Invalid arguments for not"
-    | b == Less = case less s of
-        Left err -> Left err
-        Right ((Boolean bo):__) -> Right $ Boolean (nnot bo) : s
-        _ -> Left "Invalid arguments for not"
-    | otherwise = Left "Invalid arguments for not"
+call _ _ (Builtin (Not b)) s = nnot b s
 call vars env (Function _ a p) (s:xs) = case exec (getargs a (s:xs)) env vars p [] of
     Left err -> Left err
     Right (Number n) -> Right $ Number n : xs

@@ -29,6 +29,7 @@ library
       Exception
       Execute
       FileProc
+      ParseBin
       Parser
       ReadFile
       VM
@@ -59,14 +60,14 @@ executable glados-exe
 
 test-suite glados-test
   type: exitcode-stdio-1.0
-  main-is: tests.hs
+  main-is: vm.hs
   other-modules:
       Paths_glados
   hs-source-dirs:
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      HUnit
+      QuickCheck
     , base >=4.7 && <5
     , containers
     , directory
