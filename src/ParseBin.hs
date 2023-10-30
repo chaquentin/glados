@@ -57,23 +57,53 @@ getNumber (x:xs) | x >= '0' && x <= '9' = (x: before, after)
                  where (before, after) = getNumber xs
 
 getBool :: String -> Either String Bool
-getBool str = case cutFirstWord str of
+getBool str = case cutFirstWord $ removeIndemptation str of
     ("true", _) -> Right True
     ("false", _) -> Right False
     _ -> Left "Error: not a boolean"
 
-restToValue :: String -> Value
-restToValue str = case getString str of
-    Right (str, _) -> Chaine str
+getBuiltin :: String -> Either String Builtin
+getBuiltin str = case cutFirstWord $ removeIndemptation str of
+    ("add", _) -> Right Add
+    ("sub", _) -> Right Sub
+    ("mul", _) -> Right Mul
+    ("div", _) -> Right Div
+    ("eq", _) -> Right Eqq
+    ("less", _) -> Right Less
+    ("not", xs) -> case getBuiltin xs of
+        Right b -> Right (Not b)
+        Left err -> Left err
+    _ -> Left "Error: not a builtin"
+
+restToValue :: String -> Either String Value
+restToValue str = case getString $ removeIndemptation str of
+    Right (str, _) -> Right (Chaine str)
     Left err -> case getNumber str of
         ([], _) -> case getBool str of
-            Right b -> Boolean b
-            Left err -> error err
-        (str, _) -> Number (read str :: Int)
+            Right b -> Right (Boolean b)
+            Left err -> case getBuiltin str of
+                Right b -> Right (Builtin b)
+                Left err -> Left err
+        (str, _) -> Right (Number (read str :: Int))
 
 arrayToProgram :: [String] -> Program -> Program
-arrayToProgram [] _ = []
-arrayToProgram (x:xs) p | instruction == "push" = arrayToProgram xs (p ++ [Push (Number (read rest :: Int))])
+arrayToProgram [] x = x
+arrayToProgram (x:xs) p | instruction == "push" = case restToValue rest of
+                            Right v -> arrayToProgram xs (p ++ [Push v])
+                            Left err -> error err
                         | instruction == "call" = arrayToProgram xs (p ++ [Call])
+                        | instruction == "ret" = arrayToProgram xs (p ++ [Ret])
+                        | instruction == "end" = p
+                        | instruction == "jmpiffalse" = case restToValue rest of
+                            Right (Number v) -> arrayToProgram xs (p ++ [JumpIfFalse v])
+                            _ -> error "Error: not a number"
+                        | instruction == "pusharg" = case restToValue rest of
+                            Right (Number v) -> arrayToProgram xs (p ++ [PushArg v])
+                            _ -> error "Error: not a number"
                         | otherwise = arrayToProgram xs p
                         where (instruction, rest) = cutFirstWord $ removeIndemptation x
+
+
+
+exec_le_code :: [String] -> Either String Value
+exec_le_code code = exec [Number 4] [] [] (arrayToProgram code []) []
