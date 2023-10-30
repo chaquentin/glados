@@ -19,7 +19,7 @@ instance Show Value where
     show (Chaine s) = s
     show (Boolean b) = show b
     show (Builtin n) = "<built-in function> " ++ show n
-    show (Function n a _) = "<function> " ++ n ++ " <nomber of args> " ++ show a
+    show (Function n a p) = "<function> " ++ n ++ " <nomber of args> " ++ show a ++ " <program> " ++ show p
 
 -- | This instance is used to compare the value of the language.
 instance Eq Value where
@@ -51,6 +51,7 @@ data Instruction
     | PushVar String
     | ChangeVar String Value
     | Ret
+    deriving (Show, Eq)
 
 -- | This data type represent the stack of the language.
 type Stack = [Value]
@@ -232,7 +233,7 @@ jumpIfFalse _ _ _= Left "Invalid arguments for jumpIfFalse"
 getargs :: Int -> Stack -> Args
 getargs 0 _ = []
 getargs _ [] = []
-getargs n (x:xs) = x : (x:getargs (n - 1) xs)
+getargs n (x:xs) = x : getargs (n - 1) xs
 
 -- | This function take a `Vars`, `Env`, `Value` and a `Stack` and return a `Stack` or an error.
 -- This function call the first element of the stack and return the result.
@@ -249,13 +250,13 @@ call _ _ (Builtin Div) s = divi s
 call _ _ (Builtin Eqq) s = eqq s
 call _ _ (Builtin Less) s = less s
 call _ _ (Builtin (Not b)) s = nnot b s
-call vars env (Function _ a p) (s:xs) = case exec (getargs a (s:xs)) env vars p [] of
+call vars env (Function _ a p) s = case exec (getargs a s) env vars p [] of
     Left err -> Left err
-    Right (Number n) -> Right $ Number n : xs
-    Right (Boolean b) -> Right $ Boolean b : xs
-    Right (Function n ar pro) -> Right $ Function n ar pro : xs
-    Right (Builtin b) -> Right $ Builtin b : xs
-    Right (Chaine str) -> Right $ Chaine str : xs
+    Right (Number n) -> Right $ Number n : s
+    Right (Boolean b) -> Right $ Boolean b : s
+    Right (Function n ar pro) -> Right $ Function n ar pro : s
+    Right (Builtin b) -> Right $ Builtin b : s
+    Right (Chaine str) -> Right $ Chaine str : s
 call _ _ _ _ = Left "Invalid call"
 
 -- | This function take a `Vars`, `String` and a `Value` and return a `Vars`.
