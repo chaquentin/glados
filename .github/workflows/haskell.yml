@@ -5,8 +5,6 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
     container: epitechcontent/epitest-docker:latest
 
     steps:
@@ -15,10 +13,7 @@ jobs:
     - name: Build
       run: |
         chown -R $(id -un):$(id -gn) "$HOME"
-        make
-
-    - name: Test
-      run: make test
+        make STACK='stack --allow-different-user'
 
     - name: Upload bin
       uses: actions/upload-artifact@v3
@@ -26,3 +21,8 @@ jobs:
         name: glados
         path: glados
         if-no-files-found: error
+
+  test:
+    container: epitechcontent/epitest-docker:latest
+
+    - run: make STACK='stack --allow-different-user' test
