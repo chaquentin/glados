@@ -16,6 +16,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - run: |
+        chown -R $(id -un):$(id -gn) "$HOME"
         stack build --allow-different-user
         stack test --allow-different-user
 
