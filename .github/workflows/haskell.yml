@@ -2,6 +2,9 @@ name: Build and test
 
 on: push
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,3 +24,18 @@ jobs:
         name: glados
         path: glados
         if-no-files-found: error
+
+  release:
+    if: github.event_name == 'push' && github.ref == 'refs/tags/v*'
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: glados
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: glados
