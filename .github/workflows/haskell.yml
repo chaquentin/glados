@@ -25,4 +25,5 @@ jobs:
   test:
     container: epitechcontent/epitest-docker:latest
 
+    steps:
     - run: make STACK='stack --allow-different-user' test
