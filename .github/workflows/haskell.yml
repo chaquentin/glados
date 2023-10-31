@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
-      fail-fase: false
+      fail-fast: false
     container: epitechcontent/epitest-docker:latest
 
     steps:
