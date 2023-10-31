@@ -2,9 +2,6 @@ name: Build and test
 
 on: push
 
-permissions:
-  contents: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,28 +12,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - run: |
+    - name: Build
+      run: |
         chown -R $(id -un):$(id -gn) "$HOME"
-        stack build --allow-different-user
-        stack test --allow-different-user
+        make
 
-    - uses: actions/upload-artifact@v3
+    - name: Test
+      run: make test
+
+    - name: Upload bin
+      uses: actions/upload-artifact@v3
       with:
         name: glados
         path: glados
         if-no-files-found: error
-
-  release:
-    if: github.event_name == 'push' && github.ref == 'refs/tags/v*'
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: glados
-
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: glados
