@@ -19,9 +19,9 @@ jobs:
         make STACK='stack --allow-different-user'
         make STACK='stack --allow-different-user' test
 
-      - name: Release
-        if: ${{ github.ref }} == 'refs/tag/v*'
-        uses: softprops/action-gh-release@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: glados
+    - name: Release
+      if: ${{ github.ref }} == 'refs/tag/v*'
+      uses: softprops/action-gh-release@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        files: glados
