@@ -19,6 +19,18 @@ jobs:
         make STACK='stack --allow-different-user'
         make STACK='stack --allow-different-user' test
 
+    - uses: actions/upload-artifact@v3
+      with:
+        path: glados
+
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: actions/download-artifact@v3
+      with:
+        path: glados
+
     - name: Release
       if: startsWith(github.ref, 'refs/tags/v')
       uses: softprops/action-gh-release@v1
