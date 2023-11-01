@@ -13,6 +13,7 @@ jobs:
     - name: Build and test
       run: |
         chown -R $(id -un):$(id -gn) "$HOME"
+        make STACK='stack --allow-different-user'
         make STACK='stack --allow-different-user' test
 
     - name: Upload bin
