@@ -10,10 +10,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Build
+    - name: Build and test
       run: |
         chown -R $(id -un):$(id -gn) "$HOME"
-        make STACK='stack --allow-different-user'
+        make STACK='stack --allow-different-user' test
 
     - name: Upload bin
       uses: actions/upload-artifact@v3
@@ -21,10 +21,3 @@ jobs:
         name: glados
         path: glados
         if-no-files-found: error
-
-  test:
-    runs-on: ubuntu-latest
-    container: epitechcontent/epitest-docker:latest
-
-    steps:
-    - run: make STACK='stack --allow-different-user' test
