@@ -32,8 +32,8 @@ jobs:
         path: glados
 
     - name: Release
+      uses: marvinpinto/action-automatic-releases@latest
       if: startsWith(github.ref, 'refs/tags/v')
-      uses: marvinpinto/action-automatic-releases@v1
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         files: glados
