@@ -2,8 +2,11 @@ name: Build and test
 
 on: push
 
+permissions:
+  contents: write
+
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     container: epitechcontent/epitest-docker:latest
 
@@ -16,9 +19,9 @@ jobs:
         make STACK='stack --allow-different-user'
         make STACK='stack --allow-different-user' test
 
-    - name: Upload bin
-      uses: actions/upload-artifact@v3
-      with:
-        name: glados
-        path: glados
-        if-no-files-found: error
+      - name: Release
+        if: ${{ github.ref }} == 'refs/tag/v*'
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: glados
