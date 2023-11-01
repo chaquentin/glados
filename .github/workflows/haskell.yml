@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: actions/download-artifact@v3
+    - uses: actions/download-artifact@v3
       with:
         path: glados
 
