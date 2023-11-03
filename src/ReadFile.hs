@@ -8,10 +8,9 @@
 module ReadFile (readFileIfExists) where
 import System.IO
 import System.Directory
-import Parser (parseAst)
-import Execute (printExecute)
+import System.Exit (exitWith, ExitCode(..))
 
-readFileIfExists :: String -> IO ()
+readFileIfExists :: String -> IO String
 readFileIfExists filename = do
     fileExists <- doesFileExist filename
     if fileExists
@@ -21,16 +20,25 @@ readFileIfExists filename = do
                 then do
                     fileContents <- readFileSafe filename
                     case fileContents of
-                        Just contents -> do
+                        Just contents -> 
                             if contents /= ""
-                                then printExecute $ parseAst contents
-                            else putStrLn $ "File " ++ filename ++ " is empty." 
-                        Nothing -> putStrLn $ "File " ++ filename ++ " is empty."
-                else putStrLn $ "You don't have read permissions for file " ++ filename ++ "."
-        else putStrLn $ "File " ++ filename ++ " does not exist."
+                                then return contents
+                                else do
+                                    putStrLn $ "File " ++ filename ++ " is empty."
+                                    exitWith (ExitFailure 84)
+                        Nothing -> do
+                            putStrLn $ "File " ++ filename ++ " is empty."
+                            exitWith (ExitFailure 84)
+                else do
+                    putStrLn $ "You don't have read permissions for file " ++ filename ++ "."
+                    exitWith (ExitFailure 84)
+        else do
+            putStrLn $ "File " ++ filename ++ " does not exist."
+            exitWith (ExitFailure 84)
 
 readFileSafe :: String -> IO (Maybe String)
 readFileSafe filename = do
     handle <- openFile filename ReadMode
-    contents <- hGetContents handle
+    -- remove empty lines
+    contents <- unlines . filter (/= "") . lines <$> hGetContents handle
     return (Just contents)

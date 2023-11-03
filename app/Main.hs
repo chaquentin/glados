@@ -8,16 +8,26 @@
 module Main (main) where
 import System.Environment
 import ReadFile
+import ParseBin (parseStringToArray, execLeCode)
 
 printHelp :: IO ()
-printHelp = putStrLn "Usage ./glados [FILENAME]"
-    >> putStrLn "\t [FILENAME]: file containing instructions to interpret"
+printHelp = putStrLn "Usage ./glados [--VM | --compile] [FILENAME]"
+    >> putStrLn "\t --VM: interpret the file"
+    >> putStrLn "\t --compile: compile the file to binary"
+    >> putStrLn "\t [FILENAME]: file containing instructions"
 
 main :: IO ()
 main = do
     args <- getArgs
     case args of
         ["-h"] -> printHelp
-        [filename] -> readFileIfExists filename
+        ["--VM", file] -> do
+            content <- readFileIfExists file
+            case execLeCode $ parseStringToArray content of
+                Left err -> putStrLn err
+                Right bin ->print bin
+        ["--compile", file] -> do
+            content <- readFileIfExists file
+            putStrLn content
+            putStrLn "a mettre ici la fonction de parse du fichier pour le compilo"
         _ -> putStrLn "Incorrect use. Use './glados -h' to display help."
-        
