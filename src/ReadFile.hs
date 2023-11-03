@@ -39,5 +39,6 @@ readFileIfExists filename = do
 readFileSafe :: String -> IO (Maybe String)
 readFileSafe filename = do
     handle <- openFile filename ReadMode
-    contents <- hGetContents handle
+    -- remove empty lines
+    contents <- unlines . filter (/= "") . lines <$> hGetContents handle
     return (Just contents)

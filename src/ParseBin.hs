@@ -2,7 +2,6 @@ module ParseBin where
 
 import VM
 import Data.Char
-import Control.Arrow (Arrow(first))
 
 myBreak :: String -> (String, String)
 myBreak [] = ([], [])
@@ -38,9 +37,6 @@ cutFirstWord (x:xs) | x == ' ' = ([], removeIndemptation xs)
                     | x == '\t' = ([], removeIndemptation xs)
                     | otherwise = (x: before, after)
                     where (before, after) = cutFirstWord xs
-
--- stringToInstruction :: String -> Instruction
--- stringToInstruction str 
 
 getEndOfString :: String -> Either String (String, String)
 getEndOfString [] = Left "Error: no end of string"
@@ -91,13 +87,12 @@ restToValue str = case getString $ removeIndemptation str of
         (str', _) -> Right (Number (read str' :: Int))
 
 arrayToProgram :: [String] -> Program -> Program
-arrayToProgram [] _ = error "Error: no end of program"
+arrayToProgram [] p = p
 arrayToProgram (x:xs) p | instruction == "push" = case restToValue rest of
                             Right v -> arrayToProgram xs (p ++ [Push v])
                             Left err -> error err
                         | instruction == "call" = arrayToProgram xs (p ++ [Call])
                         | instruction == "ret" = arrayToProgram xs (p ++ [Ret])
-                        | instruction == "end" = p
                         | instruction == "jmpiffalse" = case restToValue rest of
                             Right (Number v) -> arrayToProgram xs (p ++ [JumpIfFalse v])
                             _ -> error "Error: not a number"
@@ -110,7 +105,7 @@ arrayToProgram (x:xs) p | instruction == "push" = case restToValue rest of
                             (name, rest') -> case restToValue rest' of
                                 Right v -> arrayToProgram xs (p ++ [ChangeVar name v])
                                 Left err -> error err
-                        | otherwise = arrayToProgram xs p
+                        | otherwise = p
                         where (instruction, rest) = cutFirstWord $ removeIndemptation x
 
 getFunction :: String -> Either String (String, Int)
@@ -125,7 +120,6 @@ generateEnv [] env = env
 generateEnv (x:xs) env = case getFunction x of
     Right (name, nb) -> generateEnv xs (env ++ [(name, (nb, arrayToProgram xs []))])
     Left _ -> generateEnv xs env
-
 
 execLeCode :: [String] -> Either String Value
 execLeCode code = case findMain code of

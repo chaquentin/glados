@@ -2,6 +2,7 @@ import Test.QuickCheck
 import qualified System.Exit as Exit
 import Test.HUnit
 import VM (add, sub, mul, divi, eqq, less, nnot, nnot', jumpIfFalse, getargs, call, changevars, changevarslist, exec, Instruction(..), Value(..), Builtin(..))
+import VMParserTests
 
 testAddition :: Int -> Int -> Bool
 testAddition a b  = case add [Number a, Number b] of
@@ -228,6 +229,62 @@ tests = TestList
     , TestLabel "exec with jump if false with True" testexec10
     , TestLabel "exec with jump if false with False" testexec11
     , TestLabel "exec with jump if false with invalid arguments" testexec12
+    , TestLabel "my break with empty string" testMyBreakEmpty
+    , TestLabel "my break with no correspondence" testMyBreakNoCorrespondence
+    , TestLabel "my break with correspondence" testMyBreakCorrespondence
+    , TestLabel "parse string to array with empty string" testParseStringToArrayEmpty
+    , TestLabel "parse string to array with no correspondence" testParseStringToArrayNoCorrespondence
+    , TestLabel "parse string to array with correspondence" testParseStringToArrayCorrespondence
+    , TestLabel "parse string to array with some correspondence" testParseStringToArraySomeCorrespondence
+    , TestLabel "start with empty string" testStartWithEmpty
+    , TestLabel "start with no correspondence" testStartWithNoCorrespondence
+    , TestLabel "start with correspondence" testStartWithCorrespondence
+    , TestLabel "find main with empty array" testFindMainEmpty
+    , TestLabel "find main with no correspondence" testFindMainNoCorrespondence
+    , TestLabel "find main with correspondence" testFindMainCorrespondence
+    , TestLabel "remove indemptation with empty string" testRemoveIndemptationEmpty
+    , TestLabel "remove indemptation with no correspondence" testRemoveIndemptationNoCorrespondence
+    , TestLabel "remove indemptation with correspondence" testRemoveIndemptationCorrespondence
+    , TestLabel "cut first word with empty string" testCutFirstWordEmpty
+    , TestLabel "cut first word with no correspondence" testCutFirstWordNoCorrespondence
+    , TestLabel "cut first word with correspondence" testCutFirstWordCorrespondence
+    , TestLabel "get end of string with empty string" testGetEndOfStringEmpty
+    , TestLabel "get end of string with no correspondence" testGetEndOfStringNoCorrespondence
+    , TestLabel "get end of string with correspondence" testGetEndOfStringCorrespondence
+    , TestLabel "get string with empty string" testGetStringEmpty
+    , TestLabel "get string with no correspondence" testGetStringNoCorrespondence
+    , TestLabel "get string with correspondence" testGetStringCorrespondence
+    , TestLabel "get number with empty string" testGetNumberEmpty
+    , TestLabel "get number with no correspondence" testGetNumberNoCorrespondence
+    , TestLabel "get number with correspondence" testGetNumberCorrespondence
+    , TestLabel "get bool with true" testGetBoolTrue
+    , TestLabel "get bool with false" testGetBoolFalse
+    , TestLabel "get bool with no correspondence" testGetBoolNoCorrespondence
+    , TestLabel "get bool with empty string" testGetBoolEmpty
+    , TestLabel "get true with space" testGetBoolTrueWithSpace
+    , TestLabel "get builtin with empty string" testGetBuiltinEmpty
+    , TestLabel "get builtin with no correspondence" testGetBuiltinNoCorrespondence
+    , TestLabel "get builtin add" testGetBuiltinAdd
+    , TestLabel "get builtin sub" testGetBuiltinSub
+    , TestLabel "get builtin mul" testGetBuiltinMul
+    , TestLabel "get builtin div" testGetBuiltinDiv
+    , TestLabel "get builtin eq" testGetBuiltinEq
+    , TestLabel "get builtin less" testGetBuiltinLess
+    , TestLabel "get builtin not" testGetBuiltinNot
+    , TestLabel "get add with space" testGetBuiltinAddWithSpace
+    , TestLabel "get sub with space" testGetBuiltinSubWithSpace
+    , TestLabel "get mul with space" testGetBuiltinMulWithSpace
+    , TestLabel "get div with space" testGetBuiltinDivWithSpace
+    , TestLabel "get eq with space" testGetBuiltinEqWithSpace
+    , TestLabel "get less with space" testGetBuiltinLessWithSpace
+    , TestLabel "get not with space" testGetBuiltinNotWithSpace
+    , TestLabel "get not with error" testGetBuiltinNotError
+    , TestLabel "rest to value with string" testRestToValueString
+    , TestLabel "rest to value with number" testRestToValueNumber
+    , TestLabel "rest to value with boolean" testRestToValueBool
+    , TestLabel "rest to value with builtin" testRestToValueBuiltin
+    , TestLabel "rest to value error" testRestToValueEmpty
+    , TestLabel "rest to value error" testRestToValueNoCorrespondence
     ]
 
 main :: IO ()

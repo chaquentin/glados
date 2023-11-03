@@ -11,7 +11,7 @@ data Value
     | Chaine String
     | Boolean Bool
     | Builtin Builtin
-    | Function String Int Program 
+    | Function String Int Program
 
 -- | This instance is used to show the value of the language.
 instance Show Value where
@@ -217,9 +217,9 @@ nnot b s
 -- Right [Push (Number 1),Push (Number 2)]
 -- >>> jumpIfFalse 1 [Number 1] [Push (Number 1), Push (Number 2)]
 -- Left "Invalid arguments for jumpIfFalse"
-jumpIfFalse :: Int -> Stack -> Program -> Either String Program
-jumpIfFalse n (Boolean False:_) p = Right (drop n p)
-jumpIfFalse _ (Boolean True:_) p = Right p
+jumpIfFalse :: Int -> Stack -> Program -> Either String (Program, Stack)
+jumpIfFalse n (Boolean False:xs) p = Right (drop n p, xs)
+jumpIfFalse _ (Boolean True:xs) p = Right (p, xs)
 jumpIfFalse _ _ _= Left "Invalid arguments for jumpIfFalse"
 
 -- | This function take a `Int` and a `Stack` and return a `Args`.
@@ -250,13 +250,14 @@ call _ _ (Builtin Div) s = divi s
 call _ _ (Builtin Eqq) s = eqq s
 call _ _ (Builtin Less) s = less s
 call _ _ (Builtin (Not b)) s = nnot b s
-call vars env (Function _ a p) s = case exec (getargs a s) env vars p [] of
-    Left err -> Left err
-    Right (Number n) -> Right $ Number n : s
-    Right (Boolean b) -> Right $ Boolean b : s
-    Right (Function n ar pro) -> Right $ Function n ar pro : s
-    Right (Builtin b) -> Right $ Builtin b : s
-    Right (Chaine str) -> Right $ Chaine str : s
+call vars env (Function _ a p) (x:xs) = do
+    case exec (getargs a (x:xs)) env vars p [] of
+        Left err -> Left err
+        Right (Number n) -> Right $ Number n : xs
+        Right (Boolean b) -> Right $ Boolean b : xs
+        Right (Function n ar pro) -> Right $ Function n ar pro : xs
+        Right (Builtin b) -> Right $ Builtin b : xs
+        Right (Chaine str) -> Right $ Chaine str : xs
 call _ _ _ _ = Left "Invalid call"
 
 -- | This function take a `Vars`, `String` and a `Value` and return a `Vars`.
@@ -311,6 +312,6 @@ exec a env vars (Call:xs) s = case call vars env (head s) (tail s) of
     Right p -> exec a env vars xs p
 exec a env vars ((JumpIfFalse n):xs) s = case jumpIfFalse n s xs of
     Left err -> Left err
-    Right p -> exec a env vars p s
+    Right (p, stack) -> exec a env vars p stack
 exec _ _ _ (Ret:_) (v:_) = Right v
 exec _ _ _ _ _ = Left "Invalid programe"
