@@ -1,8 +1,6 @@
 -- |
 -- Module      : ReadFile
 -- Description : Read a file if it exists.
-module ReadFile () where
-
 module ReadFile (readFileIfExists) where
 import System.IO
 import System.Directory

@@ -24,6 +24,7 @@ main = do
                 Left err -> putStrLn err
                 Right bin ->print bin
         ["--compile", file] -> do
+            content <- readFileIfExists file
             program <- case parseAst content of
               Just program -> return program
               Nothing -> error $ show $ parseAst content
