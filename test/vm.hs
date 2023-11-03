@@ -48,10 +48,10 @@ testnoteqq a b  = case nnot Eqq [Number a, Number b] of
     _ -> False
 
 testjumpiffalse1 :: Test
-testjumpiffalse1 = TestCase (assertEqual "should return Right [Push (Number 2)]" (jumpIfFalse 1 [Boolean False] [Push (Number 1), Push (Number 2)]) (Right [Push (Number 2)]))
+testjumpiffalse1 = TestCase (assertEqual "should return Right [Push (Number 2)]" (jumpIfFalse 1 [Boolean False] [Push (Number 1), Push (Number 2)]) (Right ([Push (Number 2)],[])))
 
 testjumpiffalse2 :: Test
-testjumpiffalse2 = TestCase (assertEqual "should return Right [Push (Number 1), Push (Number 2)]" (jumpIfFalse 2 [Boolean True] [Push (Number 1), Push (Number 2)]) (Right [Push (Number 1), Push (Number 2)]))
+testjumpiffalse2 = TestCase (assertEqual "should return Right [Push (Number 1), Push (Number 2)]" (jumpIfFalse 2 [Boolean True] [Push (Number 1), Push (Number 2)]) (Right ([Push (Number 1), Push (Number 2)],[])))
 
 testjumpiffalse3 :: Test
 testjumpiffalse3 = TestCase (assertEqual "should return Left 'Invalid arguments for jumpIfFalse'" (jumpIfFalse 1 [Number 1] [Push (Number 1), Push (Number 2)]) (Left "Invalid arguments for jumpIfFalse"))
@@ -114,19 +114,19 @@ testcall15 :: Test
 testcall15 = TestCase (assertEqual "should return Right [Boolean False]" (call [] [] (Builtin (Not Eqq)) [Number 1, Number 1]) (Right [Boolean False]))
 
 testcall16 :: Test
-testcall16 = TestCase (assertEqual "should return Right [Number 3, Number 2, Number 1]" (call [] [] (Function "test" 2 [PushArg 0, PushArg 1, Push (Builtin Add), Call, Ret]) [Number 2, Number 1]) (Right [Number 3, Number 2, Number 1]))
+testcall16 = TestCase (assertEqual "should return Right [Number 3, Number 2, Number 1]" (call [] [] (Function "test" 2 [PushArg 0, PushArg 1, Push (Builtin Add), Call, Ret]) [Number 2, Number 1]) (Right [Number 3, Number 1]))
 
 testcall17 :: Test
-testcall17 = TestCase (assertEqual "should return Right [Boolean False, Number 2, Number 1]" (call [] [] (Function "test" 2 [PushArg 0, PushArg 1, Push (Builtin Less), Call, Ret]) [Number 2, Number 1]) (Right [Boolean False, Number 2, Number 1]))
+testcall17 = TestCase (assertEqual "should return Right [Boolean False, Number 2, Number 1]" (call [] [] (Function "test" 2 [PushArg 0, PushArg 1, Push (Builtin Less), Call, Ret]) [Number 2, Number 1]) (Right [Boolean False, Number 1]))
 
 testcall18 :: Test
-testcall18 = TestCase (assertEqual "should return Left Right [Function 'test2' 0 [Push (Number 0), Ret], Number 2]" (call [] [("test2", (0, [Push (Number 0), Ret]))] (Function "test" 0 [PushEnv "test2", Ret]) [Number 2]) (Right [Function "test2" 0 [Push (Number 0), Ret], Number 2]))
+testcall18 = TestCase (assertEqual "should return Left Right [Function 'test2' 0 [Push (Number 0), Ret], Number 2]" (call [] [("test2", (0, [Push (Number 0), Ret]))] (Function "test" 0 [PushEnv "test2", Ret]) [Number 2]) (Right [Function "test2" 0 [Push (Number 0), Ret]]))
 
 testcall19 :: Test
-testcall19 = TestCase (assertEqual "should return Right [Builtin Add, Number 2]" (call [] [] (Function "test" 0 [Push (Builtin Add),Ret]) [Number 2]) (Right [Builtin Add, Number 2]))
+testcall19 = TestCase (assertEqual "should return Right [Builtin Add, Number 2]" (call [] [] (Function "test" 0 [Push (Builtin Add),Ret]) [Number 2]) (Right [Builtin Add]))
 
 testcall20 :: Test
-testcall20 = TestCase (assertEqual "should return Right [Chaine 'teststp', Number 2, Number 1]" (call [] [] (Function "test" 0 [Push (Chaine "teststp"), Ret]) [Number 2, Number 1]) (Right [Chaine "teststp", Number 2, Number 1]))
+testcall20 = TestCase (assertEqual "should return Right [Chaine 'teststp', Number 2, Number 1]" (call [] [] (Function "test" 0 [Push (Chaine "teststp"), Ret]) [Number 2, Number 1]) (Right [Chaine "teststp", Number 1]))
 
 testcall21 :: Test
 testcall21 = TestCase (assertEqual "should return Left 'Invalid call'" (call [] [] (Number 1) [Number 2, Number 1]) (Left "Invalid call"))
