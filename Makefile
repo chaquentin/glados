@@ -34,4 +34,9 @@ test:
 norm:
 	banana.sh .
 
-.PHONY:		all clean fclean re test norm
+doc:
+	$(STACK) haddock
+	# copy the doc to the root of the project
+	cp -r "`$(STACK) path --local-doc-root`" .
+
+.PHONY:		all clean fclean re test norm doc

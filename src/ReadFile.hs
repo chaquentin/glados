@@ -1,36 +1,43 @@
-{-
--- EPITECH PROJECT, 2023
--- B-FUN-500-TLS-5-1-glados-quentin.challon
--- File description:
--- readfile
--}
+-- |
+-- Module      : ReadFile
+-- Description : Read a file if it exists.
+module ReadFile () where
 
-module ReadFile (readFileIfExists) where
-import System.IO
-import System.Directory
-import Parser (parseAst)
-import Execute (printExecute)
+-- import Execute (printExecute)
+-- import Parser (parseAst)
+-- import System.Directory
+--   ( Permissions (readable),
+--     doesFileExist,
+--     getPermissions,
+--   )
+-- import System.IO (IOMode (ReadMode), hGetContents, openFile)
 
-readFileIfExists :: String -> IO ()
-readFileIfExists filename = do
-    fileExists <- doesFileExist filename
-    if fileExists
-        then do
-            filePermissions <- getPermissions filename
-            if readable filePermissions
-                then do
-                    fileContents <- readFileSafe filename
-                    case fileContents of
-                        Just contents -> do
-                            if contents /= ""
-                                then printExecute $ parseAst contents
-                            else putStrLn $ "File " ++ filename ++ " is empty." 
-                        Nothing -> putStrLn $ "File " ++ filename ++ " is empty."
-                else putStrLn $ "You don't have read permissions for file " ++ filename ++ "."
-        else putStrLn $ "File " ++ filename ++ " does not exist."
+-- -- | Read a file if it exists.
+-- --
+-- -- >>> readFileIfExists "exist.scm"
+-- -- (+ 1.0 2.0)
+-- -- >>> readFileIfExists "doesnotexist.scm"
+-- -- File doesnotexist.scm does not exist.
+-- readFileIfExists :: String -> IO ()
+-- readFileIfExists filename = do
+--   fileExists <- doesFileExist filename
+--   if fileExists
+--     then do
+--       filePermissions <- getPermissions filename
+--       if readable filePermissions
+--         then do
+--           fileContents <- readFileSafe filename
+--           case fileContents of
+--             Just contents -> do
+--               if contents /= ""
+--                 then printExecute $ parseAst contents
+--                 else putStrLn $ "File " ++ filename ++ " is empty."
+--             Nothing -> putStrLn $ "File " ++ filename ++ " is empty."
+--         else putStrLn $ "You don't have read permissions for file " ++ filename ++ "."
+--     else putStrLn $ "File " ++ filename ++ " does not exist."
 
-readFileSafe :: String -> IO (Maybe String)
-readFileSafe filename = do
-    handle <- openFile filename ReadMode
-    contents <- hGetContents handle
-    return (Just contents)
+-- readFileSafe :: String -> IO (Maybe String)
+-- readFileSafe filename = do
+--   handle <- openFile filename ReadMode
+--   contents <- hGetContents handle
+--   return (Just contents)
