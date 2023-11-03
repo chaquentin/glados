@@ -5,7 +5,7 @@
 -- readfile
 -}
 
-module ReadFile (readFileIfExists, fileToBin) where
+module ReadFile (readFileIfExists) where
 import System.IO
 import System.Directory
 import System.Exit (exitWith, ExitCode(..))

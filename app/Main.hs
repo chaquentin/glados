@@ -8,6 +8,7 @@
 module Main (main) where
 import System.Environment
 import ReadFile
+import ParseBin (parseStringToArray, execLeCode)
 
 printHelp :: IO ()
 printHelp = putStrLn "Usage ./glados [--VM | --compile] [FILENAME]"
@@ -22,8 +23,9 @@ main = do
         ["-h"] -> printHelp
         ["--VM", file] -> do
             content <- readFileIfExists file
-            putStrLn content
-            putStrLn "a mettre ici la fonction de parse du binaire"
+            case execLeCode $ parseStringToArray content of
+                Left err -> putStrLn err
+                Right bin ->print bin
         ["--compile", file] -> do
             content <- readFileIfExists file
             putStrLn content
