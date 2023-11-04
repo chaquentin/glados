@@ -63,11 +63,6 @@ digit = satisfy isDigit
 natural :: Parser Integer
 natural = read <$> some digit
 
-naturalOrFloat :: Parser (Either Integer Double)
-naturalOrFloat = do
-  n <- natural
-  Left n <$ char '.' <|> Right . (fromIntegral n +) . (/ 10) . fromIntegral <$> (char '.' *> natural)
-
 space :: Parser Char
 space = satisfy isSpace
 
@@ -87,14 +82,15 @@ reservedOp :: String -> Parser String
 reservedOp = token . string
 
 identifier :: Parser String
-identifier = token $ (:) <$> satisfy isAlpha <*> many (satisfy isAlphaNum)
+identifier = (:) <$> satisfy isAlpha <*> many (satisfy isAlphaNum)
 
 literal :: Parser Literal
 literal =
-  Number . either fromIntegral id <$> naturalOrFloat
+  Number . fromIntegral <$> natural
     <|> String <$> (char '"' *> many (satisfy (/= '"')) <* char '"')
-    <|> Boolean <$> (True <$ symbol "true" <|> False <$ symbol "false")
-    <|> Nil <$ symbol "nil"
+    <|> Boolean True <$ string "true"
+    <|> Boolean False <$ string "false"
+    <|> Nil <$ string "nil"
 
 binaryOperator :: Parser BinaryOperator
 binaryOperator =
@@ -126,10 +122,13 @@ ast =
     <|> functionCall
     <|> assignment
     <|> UnaryExpression <$> unaryOperator <*> ast
-    <|> BinaryExpression <$> binaryOperator <*> ast <*> ast
+    <|> binaryExpression
     <|> Literal <$> literal
     <|> Identifier <$> identifier
     <|> parens ast
+
+binaryExpression :: Parser Ast
+binaryExpression = BinaryExpression <$> binaryOperator <*> ast <*> ast
 
 sepBy1 :: Parser a -> Parser b -> Parser [a]
 sepBy1 p sep = (:) <$> p <*> many (sep *> p)
@@ -145,10 +144,10 @@ functionDeclaration =
     <*> (reservedOp "{" *> many ast <* reservedOp "}")
 
 varDeclaration :: Parser Ast
-varDeclaration = VarDeclaration <$> (symbol "var" *> identifier) <*> (reservedOp "=" *> ast)
+varDeclaration = VarDeclaration <$> (symbol "var" *> identifier <* reservedOp "=") <*> ast <* symbol ";"
 
 returnStatement :: Parser Ast
-returnStatement = ReturnStatement <$> (symbol "return" *> ast)
+returnStatement = ReturnStatement <$> (symbol "return" *> ast <* symbol ";")
 
 ifStatement :: Parser Ast
 ifStatement = IfStatement <$> (symbol "if" *> ast) <*> (reservedOp "{" *> many ast <* reservedOp "}")
