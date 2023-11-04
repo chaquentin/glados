@@ -1,0 +1,40 @@
+data Value :
+Number      Int                 -- an integer
+Chaine      String              -- a string
+Boolean     Bool                -- True or False
+Builtin     Builtin             -- a builtin function
+Function    String  Int Program -- a function with a name, a number of arguments and a program 
+
+data Builtin :
+add     -- addition
+sub     -- subtraction
+mul     -- multiplication
+div     -- division
+eqq     -- equality
+less    -- less than
+not     -- not
+    
+Instruction :
+push Value              -- push a value into the stack
+call                    -- call a function
+jmpiffalse Int         -- jump a Number of instructions if the top of the stack is False
+pusharg Int             -- push the nth argument into the stack
+pushenv String          -- push the Program since the environment into the stack
+pushvar String          -- push the value of a variable into the stack
+changevar String Value  -- change the value of a variable if the variable doesn't exist, create it
+ret                     -- return from a function
+
+type Stack = [Value]                    -- the stack
+type Program = [Instruction]            -- the program
+type Args = [Value]                     -- the arguments
+type Env = [(String, (Int, Program))]   -- the environment
+type Vars = [(String, Value)]           -- the variables
+
+
+-- the state of the program
+function_name nombre_arguments =
+    Program
+function_name2 nombre_arguments2 =
+    Program2
+main =
+    Program
