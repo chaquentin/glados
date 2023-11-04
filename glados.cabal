@@ -33,6 +33,7 @@ library
       Parser
       ReadFile
       VM
+      Writing
   other-modules:
       Paths_glados
   hs-source-dirs:
@@ -62,6 +63,7 @@ test-suite glados-test
   type: exitcode-stdio-1.0
   main-is: vm.hs
   other-modules:
+      VMParserTests
       Paths_glados
   hs-source-dirs:
       test

@@ -1,10 +1,6 @@
-{-
--- EPITECH PROJECT, 2023
--- B-FUN-500-TLS-5-1-glados-quentin.challon
--- File description:
--- readfile
--}
-
+-- |
+-- Module      : ReadFile
+-- Description : Read a file if it exists.
 module ReadFile (readFileIfExists) where
 import System.IO
 import System.Directory

@@ -1,11 +1,8 @@
-{-
--- EPITECH PROJECT, 2023
--- glados
--- File description:
--- Main
--}
-
 module Main (main) where
+
+import Execute (trancode)
+import Parser (parseAst)
+import Writing (writeProgram)
 import System.Environment
 import ReadFile
 import ParseBin (parseStringToArray, execLeCode)
@@ -28,6 +25,8 @@ main = do
                 Right bin ->print bin
         ["--compile", file] -> do
             content <- readFileIfExists file
-            putStrLn content
-            putStrLn "a mettre ici la fonction de parse du fichier pour le compilo"
+            program <- case parseAst content of
+              Just program -> return program
+              Nothing -> error $ show $ parseAst content
+            putStrLn $ writeProgram $ trancode program
         _ -> putStrLn "Incorrect use. Use './glados -h' to display help."
