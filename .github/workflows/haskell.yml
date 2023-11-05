@@ -6,34 +6,32 @@ permissions:
   contents: write
 
 jobs:
-  build-test:
+  release:
     runs-on: ubuntu-latest
     container: epitechcontent/epitest-docker:latest
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Build and test
+    - name: Build
       run: |
         chown -R $(id -un):$(id -gn) "$HOME"
         make STACK='stack --allow-different-user'
-        make STACK='stack --allow-different-user' test
 
-    - uses: actions/upload-artifact@v3
-      with:
-        path: glados
-
-  release:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/download-artifact@v3
-      with:
-        path: glados
+    - name: Test
+      run: make STACK='stack --allow-different-user' test
 
     - name: Release
       uses: marvinpinto/action-automatic-releases@latest
-      if: startsWith(github.ref, 'refs/tags/v')
+      if: github.ref == 'refs/heads/main'
       with:
-        repo_token: ${{ github.token }}
-        files: glados
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        automatic_release_tag: latest
+        prerelease: false
+        title: Release v.0.${{ github.run_number }}
+    #- name: Release
+    #  uses: marvinpinto/action-automatic-releases@latest
+    #  if: startsWith(github.ref, 'refs/tags/v')
+    #  with:
+    #    repo_token: ${{ github.token }}
+    #    files: glados
