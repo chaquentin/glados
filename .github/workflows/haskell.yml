@@ -23,15 +23,7 @@ jobs:
 
     - name: Release
       uses: marvinpinto/action-automatic-releases@latest
-      if: github.ref == 'refs/heads/main'
+      if: startsWith(github.ref, 'refs/tags/v')
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        automatic_release_tag: latest
-        prerelease: false
-        title: Release v.0.${{ github.run_number }}
-    #- name: Release
-    #  uses: marvinpinto/action-automatic-releases@latest
-    #  if: startsWith(github.ref, 'refs/tags/v')
-    #  with:
-    #    repo_token: ${{ github.token }}
-    #    files: glados
+        repo_token: ${{ github.token }}
+        #files: glados
