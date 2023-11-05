@@ -28,3 +28,4 @@ jobs:
         repo_token: ${{ github.token }}
         files: glados
         prerelease: false
+        automatic_release_tag: true
